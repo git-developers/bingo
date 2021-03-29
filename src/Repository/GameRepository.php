@@ -19,6 +19,31 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    public function findAll()
+    {
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
+    public function findAllByStatus($status)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\Game u
+            WHERE 
+            u.status = :status ORDER BY u.id DESC'
+        )
+        ->setParameter('status', $status)
+        ;
+        return $query->getResult();
+    }
+
+    public function findAllByStatusCount($status)
+    {
+        return count($this->findAllByStatus($status));
+    }
+
     // /**
     //  * @return Game[] Returns an array of Game objects
     //  */

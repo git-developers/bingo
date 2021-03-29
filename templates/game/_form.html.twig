@@ -1,0 +1,128 @@
+{{ form_start(form) }}
+<div class="card-body">
+
+    {% set formErrors = form.vars.errors.form.getErrors(true) %}
+
+    {% if formErrors|length %}
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            {{ form_errors(form) }}
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.name) }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{ form_label(form.cardNumber) }}
+                        {{ form_widget(form.cardNumber, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.cardNumber) }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        {{ form_label(form.maxCard) }}
+                        {{ form_widget(form.maxCard, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.maxCard) }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    {% if form.vars.data.id is not null %}
+                        <div class="form-group">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.cardPattern) }}
+                {{ form_widget(form.cardPattern, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.cardPattern) }}
+            </div>
+        </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div class="form-group">
+                {{ form_label(form.usersGame) }}
+                {{ form_errors(form.usersGame) }}
+            </div>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th style="width: 5%">Agregar</th>
+                        <th>Username</th>
+                        <th>Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Money Real</th>
+                        <th>Money Nominal</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for child in form.usersGame.children %}
+
+                        {% set index = child.vars.value %}
+                        {% set entity = form.usersGame.vars.choices[index].data %}
+
+                        <tr>
+                            <th scope="row">
+                                {{ form_widget(child, { 'attr': {'class': ''}}) }}
+                            </th>
+                            <td>
+                                {{ entity.username }}
+                            </td>
+                            <td>
+                                {{ form_label(child, null, { 'label_attr': {'class':'control-label'} }) }}
+                            </td>
+                            <td>
+                                {{ entity.lastName }}
+                            </td>
+                            <td>
+                                {{ entity.email }}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-block btn-default btn-sm">
+                                    {{ entity.money.realValue }}
+                                </button>
+                            </td>
+                            <td>
+                                {{ entity.money.nominalValue }}
+                                <small class="badge badge-secondary">
+                                    {{ entity.money.realValue ~ " x " ~ constant('App\\Entity\\Money::NOMINAL_VALUE_X') }}
+                                </small>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+</div>
+<div class="card-footer">
+    <button class="btn {{ button_class|default('btn-success') }} pull-right">
+        {{ button_label|default('Create New Game') }}
+    </button>
+</div>
+{{ form_end(form) }}

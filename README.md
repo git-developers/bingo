@@ -28,14 +28,23 @@ Fontawesome
 Migrations
 * https://symfony.com/doc/master/doctrine.html
 * php bin/console make:migration
-* php bin/console doctrine:migrations:migrate --no-interaction
 
-Maker
+* Step 1: php bin/console doctrine:database:create
+* Step 2: php bin/console doctrine:migrations:diff
+* Step 3: php bin/console doctrine:migrations:migrate --no-interaction
+
+Maker entity
 * php bin/console make:entity
 * php bin/console make:entity --regenerate
 
-Form
+Form - create form based on entity
 * php bin/console make:form
+
+Crud - create controller based on entity
+* php bin/console make:crud
+
+Clear cache
+* php bin/console cache:clear --no-warmup --env=dev
 
 DatabaseActivitySubscriber
 * https://symfony.com/doc/current/doctrine/events.html

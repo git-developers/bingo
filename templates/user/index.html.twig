@@ -1,39 +1,148 @@
-{% extends 'base.html.twig' %}
+{% extends 'base_backend.html.twig' %}
 
 {% block title %}User index{% endblock %}
 
 {% block body %}
-    <h1>User index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Email</th>
-                <th>Roles</th>
-                <th>Password</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-                <td>{{ user.password }}</td>
-                <td>
-                    <a href="{{ path('user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">
+                        List Users
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('backend') }}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">User</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('user_new') }}">Create new</a>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fa fa-list"></i> Table
+                            </h3>
+                            <div class="card-tools">
+                                <a href="{{ path('user_new') }}" class="btn btn-block btn-success btn-sm">
+                                    <i class="fa fa-plus"></i> Create new
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th style="width: 10px">Id</th>
+                                    <th>UserName</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Roles</th>
+                                    <th>Currency</th>
+                                    <th>Money Real</th>
+                                    <th>Money Nominal</th>
+                                    <th>IsActive</th>
+                                    <th>IsEnabled</th>
+                                    <th>actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary">
+                                                {{ user.id }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="badge badge-secondary">
+                                                {{ user.username }}
+                                            </small>
+                                        </td>
+                                        <td>{{ user.name ~ " " ~ user.lastName }}</td>
+                                        <td>{{ user.phone }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.roles|join(', ') }}</td>
+
+                                        {% if user.money is not null %}
+                                            <td>{{ user.money.currency }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-block btn-default btn-sm">
+                                                    {{ user.money.realValue }}
+                                                </button>
+                                            </td>
+                                            <td>
+                                                {{ user.money.nominalValue }}
+                                                <small class="badge badge-secondary">
+                                                    {{ user.money.realValue ~ " x " ~ constant('App\\Entity\\Money::NOMINAL_VALUE_X') }}
+                                                </small>
+                                            </td>
+                                        {% else %}
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        {% endif %}
+
+                                        <td>
+                                            {% if user.isActive %}
+                                                <small class="badge badge-success">yes</small>
+                                            {% else %}
+                                                <small class="badge badge-danger">no</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if user.isEnabled %}
+                                                <small class="badge badge-success">yes</small>
+                                            {% else %}
+                                                <small class="badge badge-danger">no</small>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a
+                                                href="{{ path('user_show', {'id': user.id}) }}"
+                                                class="btn btn-info btn-xs">
+                                                <i class="fa fa-eye"></i> show
+                                            </a>
+                                            <a
+                                                href="{{ path('user_edit', {'id': user.id}) }}"
+                                                class="btn btn-warning btn-xs">
+                                                <i class="fa fa-pencil"></i> edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6">no records found</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            {#
+                            <ul class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item"><a class="page-link" href="#">«</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                            </ul>
+                            #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

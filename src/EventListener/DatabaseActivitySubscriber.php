@@ -3,11 +3,10 @@
 namespace App\EventListener;
 
 use App\Entity\User;
-use App\Entity\Product;
-use App\Entity\Xservice;
-use App\Entity\Appointment;
-use App\Entity\ProductCategory;
-use App\Entity\XserviceCategory;
+use App\Entity\Game;
+use App\Entity\Money;
+use App\Entity\Profile;
+use App\Entity\CardPattern;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -36,60 +35,62 @@ class DatabaseActivitySubscriber implements EventSubscriber
     {
         $entity = $args->getObject();
 
-        if ($entity instanceof Product) {
-
+        if ($entity instanceof Game) {
+            
             $slugger = new AsciiSlugger();
             $name = strtolower($entity->getName());
             $code = $slugger->slug($name);
             $entity->setCode($code);
-            $entity->setIsEnabled(true);
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
+            $entity->setStatus(Game::STATUS_CREATED);
 
             return;
         }
 
-        if ($entity instanceof ProductCategory) {
+        if ($entity instanceof CardPattern) {
 
             $slugger = new AsciiSlugger();
             $name = strtolower($entity->getName());
             $code = $slugger->slug($name);
             $entity->setCode($code);
-
-            return;
-        }
-
-        if ($entity instanceof XserviceCategory) {
-
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
-
-            return;
-        }
-
-        if ($entity instanceof Xservice) {
-
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
-            $entity->setIsEnabled(true);
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
         if ($entity instanceof User) {
-
+            $entity->setPassword(uniqid());
             $entity->setIsActive(true);
             $entity->setIsEnabled(true);
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
-        if ($entity instanceof Appointment) {
+        if ($entity instanceof Money) {
+
+            $realValue = $entity->getRealValue();
+            $currency = $entity->getCurrency();
+
+            if ($realValue > 0) {
+                $entity->setNominalValue($realValue * Money::NOMINAL_VALUE_X);
+            }
 
             $entity->setCode(uniqid());
-            $entity->setIsEnabled(true);
+            $entity->setName("money_" . $currency . '_' . $realValue);
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
+
+            return;
+        }
+
+        if ($entity instanceof Profile) {
+
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
@@ -99,47 +100,43 @@ class DatabaseActivitySubscriber implements EventSubscriber
     {
         $entity = $args->getObject();
 
-        if ($entity instanceof Product) {
+        if ($entity instanceof Game) {
 
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
-        if ($entity instanceof ProductCategory) {
+        if ($entity instanceof CardPattern) {
 
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
-        if ($entity instanceof XserviceCategory) {
+        if ($entity instanceof User) {
 
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
-        if ($entity instanceof Xservice) {
+        if ($entity instanceof Money) {
 
-            $slugger = new AsciiSlugger();
-            $name = strtolower($entity->getName());
-            $code = $slugger->slug($name);
-            $entity->setCode($code);
+            $realValue = $entity->getRealValue();
+
+            if ($realValue > 0) {
+                $entity->setNominalValue($realValue * Money::NOMINAL_VALUE_X);
+            }
+
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
 
-        if ($entity instanceof Appointment) {
+        if ($entity instanceof Profile) {
+
+            $entity->setUpdatedAt(new \DateTime());
 
             return;
         }
@@ -166,7 +163,7 @@ class DatabaseActivitySubscriber implements EventSubscriber
 
         // if this subscriber only applies to certain entity types,
         // add some code to check the entity type as early as possible
-        if (!$entity instanceof Product) {
+        if (!$entity instanceof Money) {
             return;
         }
 

@@ -26,6 +26,7 @@
             {{ encore_entry_link_tags('OverlayScrollbars.min') }}
             {{ encore_entry_link_tags('daterangepicker-css') }}
             {{ encore_entry_link_tags('summernote-bs4') }}
+            {#{{ encore_entry_link_tags('bs-stepper.min') }}#}
         {% endblock %}
 
         <!-- Ionicons -->
@@ -164,7 +165,7 @@
                         alt="Logo"
                         class="brand-image img-circle elevation-3"
                         style="opacity: .8">
-                    <span class="brand-text font-weight-light">Backend</span>
+                    <span class="brand-text font-weight-light">Tianos</span>
                 </a>
 
                 <div class="sidebar">
@@ -173,7 +174,11 @@
                             <img src="{{ asset('build/images/user3-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
                         </div>
                         <div class="info">
-                            <a href="#" class="d-block">Alexander Pierce</a>
+                            <a href="#" class="d-block">
+                                {% if app.user is not null %}
+                                    {{ app.user.name ~ ' ' ~ app.user.lastName }}
+                                {% endif %}
+                            </a>
                         </div>
                     </div>
 
@@ -235,6 +240,13 @@
             {{ encore_entry_script_tags('jquery-ui.min') }}
             <script>
                 //$.widget.bridge('uibutton', $.ui.button)
+
+                {#
+                // BS-Stepper Init
+                document.addEventListener('DOMContentLoaded', function () {
+                    window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+                });
+                #}
             </script>
             {{ encore_entry_script_tags('bootstrap.bundle.min') }}
             {{ encore_entry_script_tags('Chart.min') }}
@@ -253,6 +265,7 @@
             {{ encore_entry_script_tags('dashboard') }}
             {{ encore_entry_script_tags('bootstrap-switch.min') }}
             {{ encore_entry_script_tags('demo') }}
+            {#{{ encore_entry_script_tags('bs-stepper.min') }}#}
 
         {% endblock %}
 

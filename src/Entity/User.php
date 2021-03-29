@@ -9,13 +9,30 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator as CustomAssert;
 
+// @CustomAssert\DuplicateUser
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity("email")
+ *
+ * @UniqueEntity(
+ *     fields={"email"},
+ *     message="E-Mail address has already been registered"
+ * )
+ *
+ * @UniqueEntity(
+ *     fields={"username"},
+ *     message="Username has already been registered"
+ * )
+ *
+ *
  */
 class User implements UserInterface
 {
+
+    const ROLE_ADMIN = "ROLE_ADMIN";
+    const ROLE_TIANOS = "ROLE_TIANOS";
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -48,11 +65,19 @@ class User implements UserInterface
      */
     private $notes;
 
+    // @Encrypted
     /**
      * @ORM\Column(name="email", type="string", length=180, unique=true)
      * @Assert\Email
+     * @Assert\NotBlank
+     * @CustomAssert\DuplicateUser
      */
     private $email;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=false, unique=true)
+     */
+    private $username;
 
     /**
      * @ORM\Column(type="text")
@@ -79,8 +104,9 @@ class User implements UserInterface
      * @ORM\Column(type="boolean", length=255)
      */
     private $isEnabled;
+
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Game", inversedBy="usersGame")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Game", mappedBy="usersGame")
      */
     private $games;
 
@@ -88,6 +114,25 @@ class User implements UserInterface
      * @ORM\ManyToMany(targetEntity="App\Entity\Card", mappedBy="usersCard")
      */
     private $cards;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Money", inversedBy="users")
+     */
+    private $money;
+
+    // @ORM\JoinColumn(name="money_id", referencedColumnName="id", nullable=false)
+
+    /**
+     * @Assert\Type("\DateTimeInterface")
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     */
+    private $createdAt;
+
+    /**
+     * @Assert\Type("\DateTimeInterface")
+     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     */
+    private $updatedAt;
 
     public function __construct()
     {
@@ -119,7 +164,7 @@ class User implements UserInterface
      */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->username;
     }
 
     /**
@@ -127,11 +172,46 @@ class User implements UserInterface
      */
     public function getRoles(): array
     {
+
+        if (is_array($this->roles)) {
+
+            $roles = [];
+            foreach ($this->roles as $key => $value) {
+                $roles[] = $value;
+            }
+
+            // guarantee every user at least has ROLE_USER
+            $roles[] = 'ROLE_USER';
+
+            return array_unique($roles);
+        }
+
+        if (is_string($this->roles)) {
+
+            $rolesDecode = json_decode($this->roles, true);
+
+            $roles = [];
+            foreach ($rolesDecode as $key => $value) {
+                $roles[] = $value;
+            }
+            $roles[] = 'ROLE_USER';
+
+            return array_unique($roles);
+        }
+
+        $roles = [];
+        $roles[] = 'ROLE_USER';
+        return $roles;
+
+
+
+        /*
         $roles = json_decode($this->roles);
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+        */
     }
 
     public function setRoles(array $roles): self
@@ -274,18 +354,6 @@ class User implements UserInterface
         return $this->name . " " . $this->lastName;
     }
 
-    public function getGame(): ?Game
-    {
-        return $this->game;
-    }
-
-    public function setGame(?Game $game): self
-    {
-        $this->game = $game;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Game[]
      */
@@ -298,6 +366,7 @@ class User implements UserInterface
     {
         if (!$this->games->contains($game)) {
             $this->games[] = $game;
+            $game->addUsersGame($this);
         }
 
         return $this;
@@ -307,6 +376,7 @@ class User implements UserInterface
     {
         if ($this->games->contains($game)) {
             $this->games->removeElement($game);
+            $game->removeUsersGame($this);
         }
 
         return $this;
@@ -336,6 +406,61 @@ class User implements UserInterface
             $this->cards->removeElement($card);
             $card->removeUsersCard($this);
         }
+
+        return $this;
+    }
+
+    public function setUsername(?string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeInterface $created): self
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function getMoney(): ?Money
+    {
+        return $this->money;
+    }
+
+    public function setMoney(?Money $money): self
+    {
+        $this->money = $money;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

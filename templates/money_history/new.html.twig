@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New MoneyHistory{% endblock %}
+
+{% block body %}
+    <h1>Create new MoneyHistory</h1>
+
+    {{ include('money_history/_form.html.twig') }}
+
+    <a href="{{ path('money_history_index') }}">back to list</a>
+{% endblock %}

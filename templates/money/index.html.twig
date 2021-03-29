@@ -1,0 +1,108 @@
+{% extends 'base_backend.html.twig' %}
+
+{% block title %}Money index{% endblock %}
+
+{% block body %}
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">
+                        List Money
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('backend') }}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">Money</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fa fa-list"></i> Table
+                            </h3>
+                            <div class="card-tools">
+                                <a href="{{ path('money_new') }}" class="btn btn-block btn-success btn-sm">
+                                    <i class="fa fa-plus"></i> Create new
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 5%">Id</th>
+                                        <th>Name</th>
+                                        <th>Currency</th>
+                                        <th>Real Value</th>
+                                        <th>Nominal Value</th>
+                                        <th>CreatedAt</th>
+                                        <th>updatedAt</th>
+                                        <th>actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for money in money %}
+                                    <tr>
+                                        <td>{{ money.id }}</td>
+                                        <td>{{ money.name }}</td>
+                                        <td>{{ money.currency }}</td>
+                                        <td>{{ money.realValue }}</td>
+                                        <td>
+                                            {{ money.nominalValue }}
+                                            <small class="badge badge-secondary">
+                                                {{ money.realValue ~ " x " ~ constant('App\\Entity\\Money::NOMINAL_VALUE_X') }}
+                                            </small>
+                                        </td>
+                                        <td>{{ money.createdAt ? money.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                                        <td>{{ money.updatedAt ? money.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                                        <td>
+                                            <a
+                                                href="{{ path('money_show', {'id': money.id}) }}"
+                                                class="btn btn-info btn-xs">
+                                                <i class="fa fa-eye"></i> show
+                                            </a>
+                                            <a
+                                                href="{{ path('money_edit', {'id': money.id}) }}"
+                                                class="btn btn-warning btn-xs">
+                                                <i class="fa fa-pencil"></i> edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6">no records found</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer clearfix">
+                            {#
+                            <ul class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item"><a class="page-link" href="#">«</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                            </ul>
+                            #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
