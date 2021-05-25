@@ -1,0 +1,109 @@
+{% extends 'base_backend.html.twig' %}
+
+{% block title %}Hello PlayController!{% endblock %}
+
+{% block body %}
+
+
+    <style>
+
+
+
+        /*
+        .bingo-play .col .card-numbers {
+            border-top: 1px solid #cecece;
+            border-bottom: 1px solid #cecece;
+        }
+        .bingo-play .col .card-numbers .card-number:first-child {
+            border-top: 0;
+        }
+        .bingo-play .col .card-numbers .card-number {
+            font-size: 2rem;
+            background: #fff;
+            border: 1px solid #cecece;
+            text-align: center;
+        }
+        .bingo-play .col .card-letter, .card-block .card .col .card-number {
+            text-align: center;
+            padding: .25em;
+            margin: 0;
+        }
+        */
+    </style>
+
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">
+                        Play Bingo
+                    </h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('backend') }}">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">Game</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12 col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fa fa-list"></i> Table
+                            </h3>
+                            <div class="card-tools">
+
+                            </div>
+                        </div>
+                        <div class="card-body">
+
+                            <div class="play-board">
+                                <div class="row">
+                                    {% for key1,value1 in play_board %}
+                                        <div class="col-md-12">
+                                            <div class="card-letter">{{ key1 }}</div>
+                                            <div class="card-numbers">
+                                                {% for key2,value2 in value1 %}
+                                                    <div class="card-number">{{ value2 }}</div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="row mar-top-10">
+                                <div class="col-md-12">
+                                    <button type="button" class="btn btn-success btn-lg play-execute">
+                                        <i class="fa fa-play"></i> Play
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-footer clearfix">
+                            {#
+                            <ul class="pagination pagination-sm m-0 float-right">
+                                <li class="page-item"><a class="page-link" href="#">«</a></li>
+                                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item"><a class="page-link" href="#">»</a></li>
+                            </ul>
+                            #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

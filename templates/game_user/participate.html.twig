@@ -4,39 +4,8 @@
 
 {% block body %}
 
-
     <style>
-        .bingo-card {
-            width: 85%;
-            display: inline-block;
-            margin: 0 20px 20px 20px;
-            border-radius: .5rem;
-            padding: .5rem;
-            background-color: #ff9d01;
-        }
-        .bingo-card .col .card-letter {
-            font-size: 2rem;
-            line-height: 1.5;
-            color: #343434;
-        }
-        .bingo-card .col .card-numbers {
-            border-top: 1px solid #cecece;
-            border-bottom: 1px solid #cecece;
-        }
-        .bingo-card .col .card-numbers .card-number:first-child {
-            border-top: 0;
-        }
-        .bingo-card .col .card-numbers .card-number {
-            font-size: 2rem;
-            background: #fff;
-            border: 1px solid #cecece;
-            text-align: center;
-        }
-        .bingo-card .col .card-letter, .card-block .card .col .card-number {
-            text-align: center;
-            padding: .25em;
-            margin: 0;
-        }
+
     </style>
 
     <div class="content-header">
@@ -66,7 +35,7 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
-                                <i class="fa fa-list"></i> Table
+                                <i class="fa fa-list"></i> cards
                             </h3>
                             <div class="card-tools">
 
@@ -75,46 +44,31 @@
                         <div class="card-body">
 
                             <div class="row">
-
-                                {% for key,bingoCard in bingoCards %}
-
-                                    <div class="col-md-6">
-                                        <div class="bingo-card">
-                                            <div class="row">
-
-                                                {% for key2,value in bingoCard %}
-                                                    <div class="col">
-                                                        <div class="card-letter">{{ key2|cardLetter }}</div>
-                                                        <div class="card-numbers">
-                                                            <div class="card-number">
-                                                                {{ value[0] }}
-                                                            </div>
-                                                            <div class="card-number">
-                                                                {{ value[1] }}
-                                                            </div>
-                                                            <div class="card-number">
-                                                                {% if key2 == 2 %}
-                                                                    <img src="{{ asset('build/images/logo_40x40.png') }}" class="img-circle elevation-2" alt="Tianos">
-                                                                {% else %}
-                                                                    {{ value[2] }}
-                                                                {% endif %}
-                                                            </div>
-                                                            <div class="card-number">
-                                                                {{ value[3] }}
-                                                            </div>
-                                                            <div class="card-number">
-                                                                {{ value[4] }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                {% endfor %}
-
-                                            </div>
+                                <div class="col-md-3"></div>
+                                <div class="col-md-3">
+                                    <div class="info-box mb-3 bg-warning cursor-x refresh-cards" data-card="{{ gameId }}">
+                                        <span class="info-box-icon"><i class="fa fa-spinner"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">Refrescar</span>
+                                            <span class="info-box-number">Bingo Cards</span>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <a href="{{ path('game_user_participate2', {id: gameId}) }}">
+                                        <div class="info-box mb-3 bg-success cursor-x bingo-play" data-card="{{ gameId }}">
+                                            <span class="info-box-icon"><i class="fa fa-check"></i></span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Empezar</span>
+                                                <span class="info-box-number">a Jugar</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
 
-                                {% endfor %}
-
+                            <div class="row bingo-cards-box">
+                                {% include 'api/bingo_cards.html.twig' with {'foo': 'bar'} %}
                             </div>
 
                         </div>
@@ -134,4 +88,22 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script>
+
+
+        /*
+        $(document).ready(function($) {
+
+        });
+        */
+
+
+    </script>
+
 {% endblock %}

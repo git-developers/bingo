@@ -7,6 +7,8 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import '../css/app.css';
+import '../participate/css/participate.css';
+import '../play/css/play.css';
 import '../dist/img/favicon.png';
 import '../dist/img/user1-128x128.jpg';
 import '../dist/img/user2-160x160.jpg';
@@ -44,19 +46,16 @@ import '../frontend/images/product-05-1.jpg';
 import '../frontend/images/product-05-1-600x549.jpg';
 import '../frontend/images/product-05-1-300x274.jpg';
 import '../frontend/images/product-05-1-768x702.jpg';
-import '../frontend/images/xxxxxx.jpg';
-import '../frontend/images/xxxxxx.jpg';
-import '../frontend/images/xxxxxx.jpg';
-import '../frontend/images/xxxxxx.jpg';
 
 // Need jQuery? Install it with "yarn add jquery", then uncomment to import it.
-import $ from 'jquery';
+//import $ from 'jquery';
+//import $ from './node_modules/jquery/dist/jquery.js';
 
 // require jQuery normally
-// const $ = require('jquery');
+const $ = require('jquery');
 
 // create global $ and jQuery variables
-//global.$ = global.jQuery = $;
+global.$ = global.jQuery = $;
 
 
-console.log('Hello Webpack Encore! Edit me in assets/js/app.js');
+console.log('POLLO Hello Webpack Encore! Edit me in assets/js/app.js');

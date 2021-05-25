@@ -2,55 +2,52 @@
 
 namespace App\Entity;
 
-use App\Repository\CardPatternRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=CardPatternRepository::class)
+ * CardPattern
+ *
+ * @ORM\Table(name="card_pattern")
+ * @ORM\Entity
  */
 class CardPattern
 {
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=false)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Game", mappedBy="cardPattern")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $gameCardPattern;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $createdAt;
-
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $updatedAt;
-
-    public function __construct()
-    {
-        $this->gameCardPattern = new ArrayCollection();
-    }
+    private $updatedAt = 'CURRENT_TIMESTAMP';
 
     public function getId(): ?int
     {
@@ -81,37 +78,6 @@ class CardPattern
         return $this;
     }
 
-    /**
-     * @return Collection|Game[]
-     */
-    public function getGameCardPattern(): Collection
-    {
-        return $this->gameCardPattern;
-    }
-
-    public function addGameCardPattern(Game $gameCardPattern): self
-    {
-        if (!$this->gameCardPattern->contains($gameCardPattern)) {
-            $this->gameCardPattern[] = $gameCardPattern;
-            $gameCardPattern->setCardPattern($this);
-        }
-
-        return $this;
-    }
-
-    public function removeGameCardPattern(Game $gameCardPattern): self
-    {
-        if ($this->gameCardPattern->contains($gameCardPattern)) {
-            $this->gameCardPattern->removeElement($gameCardPattern);
-            // set the owning side to null (unless already changed)
-            if ($gameCardPattern->getCardPattern() === $this) {
-                $gameCardPattern->setCardPattern(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
@@ -135,4 +101,6 @@ class CardPattern
 
         return $this;
     }
+
+
 }

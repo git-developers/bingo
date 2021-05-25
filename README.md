@@ -3,13 +3,20 @@ LOCALHOST FRONTEND
 
 LOCALHOST BACKEND
 * http://localhost/bingo/public/index.php/backend
+* http://localhost/bingo/public/index.php/user_api/login/60ab2f80c706e
 
 
 WEBPACK
 * https://symfony.com/doc/current/frontend/encore/simple-example.html
-POLLO@DESKTOP-NDEREUT MINGW64 /c/xampp/htdocs/griselbeautyspa
+POLLO@DESKTOP-NDEREUT MINGW64 /c/xampp/htdocs/bingo
 $ yarn add --dev @symfony/webpack-encore
 $ yarn encore dev --watch
+
+CopyWebpackPlugin
+-----------------
+yarn upgrade
+yarn add copy-webpack-plugin
+https://hugo-soltys.com/blog/how-to-handle-image-assets-with-symfony-4
 
 
 Images Encore
@@ -30,12 +37,17 @@ Migrations
 * php bin/console make:migration
 
 * Step 1: php bin/console doctrine:database:create
-* Step 2: php bin/console doctrine:migrations:diff
+* Step 2: php bin/console doctrine:migrations:diff --no-interaction
 * Step 3: php bin/console doctrine:migrations:migrate --no-interaction
 
 Maker entity
 * php bin/console make:entity
 * php bin/console make:entity --regenerate
+
+How to Generate Entities from an Existing Database
+* https://symfony.com/doc/current/doctrine/reverse_engineering.html
+* php bin/console doctrine:mapping:import "App\Entity" annotation --path=src/Entity
+* php bin/console make:entity --regenerate App
 
 Form - create form based on entity
 * php bin/console make:form
@@ -58,3 +70,9 @@ Loading Fixtures
 
 Form
 * https://ourcodeworld.com/articles/read/221/creating-a-simple-contact-form-with-formtype-in-symfony-3
+
+Login
+* http://localhost/bingo/public/index.php/user_api/login/tianos_admin
+
+Example
+* https://letsplaybingo.io/

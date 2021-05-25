@@ -2,30 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator as CustomAssert;
 
-// @CustomAssert\DuplicateUser
 /**
- * @ORM\Entity(repositoryClass=UserRepository::class)
+ * User
  *
- * @UniqueEntity(
- *     fields={"email"},
- *     message="E-Mail address has already been registered"
- * )
- *
- * @UniqueEntity(
- *     fields={"username"},
- *     message="Username has already been registered"
- * )
- *
- *
+ * @ORM\Table(name="user", uniqueConstraints={@ORM\UniqueConstraint(name="UNIQ_8D93D649E7927C74", columns={"email"}), @ORM\UniqueConstraint(name="UNIQ_8D93D649F85E0677", columns={"username"})}, indexes={@ORM\Index(name="IDX_8D93D649BF29332C", columns={"money_id"}), @ORM\Index(name="IDX_8D93D649CCFA12B8", columns={"profile_id"})})
+ * @ORM\Entity
  */
 class User implements UserInterface
 {
@@ -34,259 +18,128 @@ class User implements UserInterface
     const ROLE_TIANOS = "ROLE_TIANOS";
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(name="phone", type="string", length=255, nullable=true)
      */
     private $phone;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(name="address", type="string", length=255, nullable=true)
      */
     private $address;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @var string|null
+     *
+     * @ORM\Column(name="notes", type="string", length=255, nullable=true)
      */
     private $notes;
 
-    // @Encrypted
     /**
-     * @ORM\Column(name="email", type="string", length=180, unique=true)
-     * @Assert\Email
-     * @Assert\NotBlank
-     * @CustomAssert\DuplicateUser
+     * @var string
+     *
+     * @ORM\Column(name="email", type="string", length=180, nullable=false)
      */
     private $email;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=false, unique=true)
+     * @var string
+     *
+     * @ORM\Column(name="username", type="string", length=255, nullable=false)
      */
     private $username;
 
     /**
-     * @ORM\Column(type="text")
+     * @var string
+     *
+     * @ORM\Column(name="roles", type="text", length=0, nullable=false)
      */
-    private $roles = []; // @ORM\Column(type="json")
+    private $roles;
 
     /**
-     * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=255, nullable=false)
      */
     private $password;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Profile", inversedBy="users", cascade={"persist"})
-     */
-    private $profile;
-
-    /**
-     * @ORM\Column(type="boolean", length=255)
+     * @var bool
+     *
+     * @ORM\Column(name="is_active", type="boolean", nullable=false)
      */
     private $isActive;
 
     /**
-     * @ORM\Column(type="boolean", length=255)
+     * @var bool
+     *
+     * @ORM\Column(name="is_enabled", type="boolean", nullable=false)
      */
     private $isEnabled;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Game", mappedBy="usersGame")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $games;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Card", mappedBy="usersCard")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $cards;
+    private $updatedAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Money", inversedBy="users")
+     * @var \Money
+     *
+     * @ORM\ManyToOne(targetEntity="Money")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="money_id", referencedColumnName="id")
+     * })
      */
     private $money;
 
-    // @ORM\JoinColumn(name="money_id", referencedColumnName="id", nullable=false)
-
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \Profile
+     *
+     * @ORM\ManyToOne(targetEntity="Profile")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
+     * })
      */
-    private $createdAt;
-
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $updatedAt;
-
-    public function __construct()
-    {
-        $this->games = new ArrayCollection();
-        $this->cards = new ArrayCollection();
-    }
+    private $profile;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * A visual identifier that represents this user.
-     *
-     * @see UserInterface
-     */
-    public function getUsername(): string
-    {
-        return (string) $this->username;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
-
-        if (is_array($this->roles)) {
-
-            $roles = [];
-            foreach ($this->roles as $key => $value) {
-                $roles[] = $value;
-            }
-
-            // guarantee every user at least has ROLE_USER
-            $roles[] = 'ROLE_USER';
-
-            return array_unique($roles);
-        }
-
-        if (is_string($this->roles)) {
-
-            $rolesDecode = json_decode($this->roles, true);
-
-            $roles = [];
-            foreach ($rolesDecode as $key => $value) {
-                $roles[] = $value;
-            }
-            $roles[] = 'ROLE_USER';
-
-            return array_unique($roles);
-        }
-
-        $roles = [];
-        $roles[] = 'ROLE_USER';
-        return $roles;
-
-
-
-        /*
-        $roles = json_decode($this->roles);
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-        */
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = json_encode($roles);
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getPassword(): string
-    {
-        return (string) $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getSalt()
-    {
-        // not needed when using the "bcrypt" algorithm in security.yaml
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function eraseCredentials()
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
-    public function getProfile(): ?Profile
-    {
-        return $this->profile;
-    }
-
-    public function setProfile(?Profile $profile): self
-    {
-        $this->profile = $profile;
-
-        return $this;
-    }
-
-    public function getIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): self
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    public function getIsEnabled(): ?bool
-    {
-        return $this->isEnabled;
-    }
-
-    public function setIsEnabled(bool $isEnabled): self
-    {
-        $this->isEnabled = $isEnabled;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -349,94 +202,116 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getFullName(): ?string
+    public function getEmail(): ?string
     {
-        return $this->name . " " . $this->lastName;
+        return $this->email;
     }
 
-    /**
-     * @return Collection|Game[]
-     */
-    public function getGames(): Collection
+    public function setEmail(string $email): self
     {
-        return $this->games;
-    }
-
-    public function addGame(Game $game): self
-    {
-        if (!$this->games->contains($game)) {
-            $this->games[] = $game;
-            $game->addUsersGame($this);
-        }
+        $this->email = $email;
 
         return $this;
     }
 
-    public function removeGame(Game $game): self
+    public function getUsername(): ?string
     {
-        if ($this->games->contains($game)) {
-            $this->games->removeElement($game);
-            $game->removeUsersGame($this);
-        }
-
-        return $this;
+        return $this->username;
     }
 
-    /**
-     * @return Collection|Card[]
-     */
-    public function getCards(): Collection
-    {
-        return $this->cards;
-    }
-
-    public function addCard(Card $card): self
-    {
-        if (!$this->cards->contains($card)) {
-            $this->cards[] = $card;
-            $card->addUsersCard($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCard(Card $card): self
-    {
-        if ($this->cards->contains($card)) {
-            $this->cards->removeElement($card);
-            $card->removeUsersCard($this);
-        }
-
-        return $this;
-    }
-
-    public function setUsername(?string $username): self
+    public function setUsername(string $username): self
     {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getCreated(): ?\DateTimeInterface
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
     {
-        return $this->created;
+
+        if (is_array($this->roles)) {
+
+            $roles = [];
+            foreach ($this->roles as $key => $value) {
+                $roles[] = $value;
+            }
+
+            // guarantee every user at least has ROLE_USER
+            $roles[] = 'ROLE_USER';
+
+            return array_unique($roles);
+        }
+
+        if (is_string($this->roles)) {
+
+            $rolesDecode = json_decode($this->roles, true);
+
+            $roles = [];
+            foreach ($rolesDecode as $key => $value) {
+                $roles[] = $value;
+            }
+            $roles[] = 'ROLE_USER';
+
+            return array_unique($roles);
+        }
+
+        $roles = [];
+        $roles[] = 'ROLE_USER';
+        return $roles;
+
+
+
+        /*
+        $roles = json_decode($this->roles);
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+        */
     }
 
-    public function setCreated(\DateTimeInterface $created): self
+    public function setRoles(array $roles): self
     {
-        $this->created = $created;
+        $this->roles = json_encode($roles);
 
         return $this;
     }
 
-    public function getMoney(): ?Money
+    public function getPassword(): ?string
     {
-        return $this->money;
+        return $this->password;
     }
 
-    public function setMoney(?Money $money): self
+    public function setPassword(string $password): self
     {
-        $this->money = $money;
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    public function getIsEnabled(): ?bool
+    {
+        return $this->isEnabled;
+    }
+
+    public function setIsEnabled(bool $isEnabled): self
+    {
+        $this->isEnabled = $isEnabled;
 
         return $this;
     }
@@ -465,4 +340,44 @@ class User implements UserInterface
         return $this;
     }
 
+    public function getMoney(): ?Money
+    {
+        return $this->money;
+    }
+
+    public function setMoney(?Money $money): self
+    {
+        $this->money = $money;
+
+        return $this;
+    }
+
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    public function setProfile(?Profile $profile): self
+    {
+        $this->profile = $profile;
+
+        return $this;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getSalt()
+    {
+        // not needed when using the "bcrypt" algorithm in security.yaml
+    }
 }

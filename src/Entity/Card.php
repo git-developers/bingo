@@ -2,60 +2,73 @@
 
 namespace App\Entity;
 
-use App\Repository\CardRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=CardRepository::class)
+ * Card
+ *
+ * @ORM\Table(name="card")
+ * @ORM\Entity
  */
 class Card
 {
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string|null
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string|null
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=true)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var int|null
+     *
+     * @ORM\Column(name="quantity", type="integer", nullable=true)
      */
-    private $status;
+    private $quantity;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="cards")
+     * @var string
+     *
+     * @ORM\Column(name="card_hash", type="string", length=255, nullable=false)
      */
-    private $usersCard;
+    private $cardHash;
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var string
+     *
+     * @ORM\Column(name="json", type="text", length=65535, nullable=false)
      */
-    private $createdAt;
+    private $json;
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $updatedAt;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
-    public function __construct()
-    {
-        $this->usersCard = new ArrayCollection();
-    }
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $updatedAt = 'CURRENT_TIMESTAMP';
 
     public function getId(): ?int
     {
@@ -67,7 +80,7 @@ class Card
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
@@ -79,52 +92,45 @@ class Card
         return $this->code;
     }
 
-    public function setCode(string $code): self
+    public function setCode(?string $code): self
     {
         $this->code = $code;
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getQuantity(): ?int
     {
-        return $this->status;
+        return $this->quantity;
     }
 
-    public function setStatus(string $status): self
+    public function setQuantity(?int $quantity): self
     {
-        $this->status = $status;
+        $this->quantity = $quantity;
 
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsersCard(): Collection
+    public function getCardHash(): ?string
     {
-        return $this->usersCard;
+        return $this->cardHash;
     }
 
-    public function addUsersCard(User $usersCard): self
+    public function setCardHash(string $cardHash): self
     {
-        if (!$this->usersCard->contains($usersCard)) {
-            $this->usersCard[] = $usersCard;
-            $usersCard->setCards($this);
-        }
+        $this->cardHash = $cardHash;
 
         return $this;
     }
 
-    public function removeUsersCard(User $usersCard): self
+    public function getJson(): ?string
     {
-        if ($this->usersCard->contains($usersCard)) {
-            $this->usersCard->removeElement($usersCard);
-            // set the owning side to null (unless already changed)
-            if ($usersCard->getCards() === $this) {
-                $usersCard->setCards(null);
-            }
-        }
+        return $this->json;
+    }
+
+    public function setJson(string $json): self
+    {
+        $this->json = $json;
 
         return $this;
     }
@@ -152,4 +158,6 @@ class Card
 
         return $this;
     }
+
+
 }

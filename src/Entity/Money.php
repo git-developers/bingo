@@ -2,14 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\MoneyRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=MoneyRepository::class)
+ * Money
+ *
+ * @ORM\Table(name="money", indexes={@ORM\Index(name="IDX_B7DF13E431B6CFB2", columns={"money_history_id"})})
+ * @ORM\Entity
  */
 class Money
 {
@@ -42,67 +41,72 @@ class Money
     const NOMINAL_VALUE_X = 5;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=false)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="currency", type="string", length=255, nullable=false)
      */
     private $currency;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="real_value", type="integer", nullable=false)
      */
     private $realValue;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="nominal_value", type="integer", nullable=false)
      */
     private $nominalValue;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\User", mappedBy="money")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $users;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\MoneyHistory", inversedBy="money")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $updatedAt = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var \MoneyHistory
+     *
+     * @ORM\ManyToOne(targetEntity="MoneyHistory")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="money_history_id", referencedColumnName="id")
+     * })
      */
     private $moneyHistory;
-
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $createdAt;
-
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $updatedAt;
-
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-    }
-
-    public function __toString() {
-        return $this->name;
-    }
 
     public function getId(): ?int
     {
@@ -133,14 +137,14 @@ class Money
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCurrency(): ?string
     {
-        return $this->createdAt;
+        return $this->currency;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCurrency(string $currency): self
     {
-        $this->createdAt = $createdAt;
+        $this->currency = $currency;
 
         return $this;
     }
@@ -169,33 +173,14 @@ class Money
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
+    public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->users;
+        return $this->createdAt;
     }
 
-    public function addUser(User $user): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setMoney($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            // set the owning side to null (unless already changed)
-            if ($user->getMoney() === $this) {
-                $user->setMoney(null);
-            }
-        }
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -224,15 +209,5 @@ class Money
         return $this;
     }
 
-    public function getCurrency(): ?string
-    {
-        return $this->currency;
-    }
 
-    public function setCurrency(string $currency): self
-    {
-        $this->currency = $currency;
-
-        return $this;
-    }
 }

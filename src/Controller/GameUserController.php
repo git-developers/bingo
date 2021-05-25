@@ -3,16 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Entity\GameUserCard;
 use App\Form\GameType;
 use App\Repository\GameRepository;
+use App\Repository\CardRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use App\Util\CardUtil;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 /**
- * @Route("/gameuser")
+ * @Route("/game_user")
  * @IsGranted("ROLE_TIANOS")
  */
 class GameUserController extends AbstractController
@@ -31,79 +36,63 @@ class GameUserController extends AbstractController
     /**
      * @Route("/participate/{id}", name="game_user_participate", methods={"GET"})
      */
-    public function participate(GameRepository $gameRepository, $id): Response
+    public function participate(
+        GameRepository $gameRepository, CardRepository $cardRepository, SessionInterface $session, $id
+    ): Response
     {
 
         $game = $gameRepository->find($id);
 
-        /*
-        DEFINE('BR', "<br />\n");
-
-        $bingo_cards = $this->getBingoCards($game->getMaxCard());
-
-        foreach($bingo_cards as $card) {
-
-            for($k=0; $k<(sizeof($card)/5); $k++) {
-
-                echo(str_pad($card[$k], 2, ' ', STR_PAD_LEFT).' | ');
-                echo($card[$k+5].' | ');
-                echo($card[$k+10].' | ');
-                echo($card[$k+15].' | ');
-                echo($card[$k+20].BR);
-                if($k < 4) echo(str_repeat('-', 22).BR);
-            }
-            echo(BR.BR);
+        if (!$game) {
+            throw new AccessDeniedHttpException('Game participate: AccessDenied');
         }
 
-        exit;
-        */
+        $cards = $cardRepository->randCardsHash($game->getMaxCard());
 
+        $cardHash = [];
+        $bingoCards = [];
+        foreach ($cards as $card) {
+            $cardHash[] = $card["card_hash"];
+            $bingoCards[$card["card_hash"]] = json_decode($card["json"]);
+        }
 
-
+        $session->set("card_hash", $cardHash);
 
         return $this->render('game_user/participate.html.twig', [
-            'id' => $id,
-            'bingoCards' => $this->getBingoCards($game->getMaxCard()),
+            'gameId' => $id,
+            'bingoCards' => $bingoCards,
         ]);
     }
 
-    public function getBingoCards($numberOfCards): array
+    /**
+     * @Route("/participate2/{id}", name="game_user_participate2", methods={"GET"})
+     */
+    public function participate2(
+        GameRepository $gameRepository, CardRepository $cardRepository, SessionInterface $session, $id
+    ): Response
     {
-        $columns = array(
-            range(1,15),
-            range(16,30),
-            range(31,45),
-            range(46,60),
-            range(61,75)
-        );
 
-        $bingoCards = [];
-        $cardHashes = [];
-        $i = 0;
+        $cardHashes = $session->get("card_hash");
+        $game = $gameRepository->find($id);
 
-        while ($i < $numberOfCards) {
-            $bingoCard = [];
-
-            for ($j = 0; $j < 5; $j++) {
-                $randomKeys = array_rand($columns[$j], 5);
-                $randomValues = array_intersect_key($columns[$j], array_flip($randomKeys));
-                $bingoCard = array_merge($bingoCard, $randomValues);
-            }
-
-            $cardHash = md5(json_encode($bingoCard));
-
-            if(!in_array($cardHash, $cardHashes)) {
-                $bingoCards[] = $bingoCard;
-                $cardHashes[] = $cardHash;
-                $i += 1;
-            }
+        if (!$game) {
+            throw new AccessDeniedHttpException('Game participate: AccessDenied');
         }
 
-        $out = [];
-        foreach ($bingoCards as $key => $value) {
-            $out[] = array_chunk($value, 5);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        foreach ($cardHashes as $cardHash) {
+            $o = new GameUserCard();
+            $o->setGame($game);
+            $o->setUser($this->getUser());
+            
+            $card = $cardRepository->findByCardHash($cardHash);
+            $o->setCard($card);
+            $entityManager->persist($o);
+            $entityManager->flush();
         }
 
-        return $out;
+        return $this->redirectToRoute('play_index');
     }
+
 }

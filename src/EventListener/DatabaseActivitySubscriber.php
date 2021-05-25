@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\User;
+use App\Entity\Card;
 use App\Entity\Game;
 use App\Entity\Money;
 use App\Entity\Profile;
@@ -11,9 +12,18 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\String\Slugger\AsciiSlugger;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class DatabaseActivitySubscriber implements EventSubscriber
 {
+
+    private $encoder;
+
+    public function __construct(UserPasswordEncoderInterface $encoder)
+    {
+        $this->encoder = $encoder;
+    }
+
     // this method can only return the event names; you cannot define a
     // custom method name to execute when each event triggers
     public function getSubscribedEvents()
@@ -43,7 +53,10 @@ class DatabaseActivitySubscriber implements EventSubscriber
             $entity->setCode($code);
             $entity->setCreatedAt(new \DateTime());
             $entity->setUpdatedAt(new \DateTime());
-            $entity->setStatus(Game::STATUS_CREATED);
+
+            if (!$entity->getStatus()) {
+                $entity->setStatus(Game::STATUS_CREATED);
+            }
 
             return;
         }
@@ -61,7 +74,11 @@ class DatabaseActivitySubscriber implements EventSubscriber
         }
 
         if ($entity instanceof User) {
-            $entity->setPassword(uniqid());
+
+            $encoded = $this->encoder->encodePassword($entity, $entity->getPassword());
+            $entity->setPassword($encoded);
+
+            //$entity->setPassword(uniqid());
             $entity->setIsActive(true);
             $entity->setIsEnabled(true);
             $entity->setCreatedAt(new \DateTime());
@@ -88,6 +105,14 @@ class DatabaseActivitySubscriber implements EventSubscriber
         }
 
         if ($entity instanceof Profile) {
+
+            $entity->setCreatedAt(new \DateTime());
+            $entity->setUpdatedAt(new \DateTime());
+
+            return;
+        }
+
+        if ($entity instanceof Card) {
 
             $entity->setCreatedAt(new \DateTime());
             $entity->setUpdatedAt(new \DateTime());

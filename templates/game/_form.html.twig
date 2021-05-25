@@ -60,8 +60,8 @@
         <div class="col-md-12">
 
             <div class="form-group">
-                {{ form_label(form.usersGame) }}
-                {{ form_errors(form.usersGame) }}
+                {{ form_label(form.users) }}
+                {{ form_errors(form.users) }}
             </div>
 
             <table class="table table-hover table-striped">
@@ -78,10 +78,10 @@
                 </thead>
                 <tbody>
 
-                    {% for child in form.usersGame.children %}
+                    {% for child in form.users.children %}
 
                         {% set index = child.vars.value %}
-                        {% set entity = form.usersGame.vars.choices[index].data %}
+                        {% set entity = form.users.vars.choices[index].data %}
 
                         <tr>
                             <th scope="row">
@@ -113,16 +113,16 @@
                         </tr>
                     {% endfor %}
 
-                </tbody>
-            </table>
+</tbody>
+</table>
 
-        </div>
-    </div>
+</div>
+</div>
 
 </div>
 <div class="card-footer">
-    <button class="btn {{ button_class|default('btn-success') }} pull-right">
-        {{ button_label|default('Create New Game') }}
-    </button>
+<button class="btn {{ button_class|default('btn-success') }} pull-right">
+{{ button_label|default('Save') }}
+</button>
 </div>
 {{ form_end(form) }}

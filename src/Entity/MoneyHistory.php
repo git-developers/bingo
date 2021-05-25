@@ -2,65 +2,66 @@
 
 namespace App\Entity;
 
-use App\Repository\MoneyHistoryRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=MoneyHistoryRepository::class)
+ * MoneyHistory
+ *
+ * @ORM\Table(name="money_history")
+ * @ORM\Entity
  */
 class MoneyHistory
 {
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=false)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="real_value", type="integer", nullable=false)
      */
     private $realValue;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="nominal_value", type="integer", nullable=false)
      */
     private $nominalValue;
-    
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Money", mappedBy="moneyHistory")
-     */
-    private $money;
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $createdAt;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $updatedAt;
-
-    public function __construct()
-    {
-        $this->money = new ArrayCollection();
-    }
+    private $updatedAt = 'CURRENT_TIMESTAMP';
 
     public function getId(): ?int
     {
@@ -87,37 +88,6 @@ class MoneyHistory
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Money[]
-     */
-    public function getMoney(): Collection
-    {
-        return $this->money;
-    }
-
-    public function addMoney(Money $money): self
-    {
-        if (!$this->money->contains($money)) {
-            $this->money[] = $money;
-            $money->setMoneyHistory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeMoney(Money $money): self
-    {
-        if ($this->money->contains($money)) {
-            $this->money->removeElement($money);
-            // set the owning side to null (unless already changed)
-            if ($money->getMoneyHistory() === $this) {
-                $money->setMoneyHistory(null);
-            }
-        }
 
         return $this;
     }
@@ -169,4 +139,6 @@ class MoneyHistory
 
         return $this;
     }
+
+
 }

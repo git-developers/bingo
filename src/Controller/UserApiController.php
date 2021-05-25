@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\UserType;
+use App\Form\UserLoginType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,11 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 // https://silex.symfony.com/doc/2.0/cookbook/json_request_body.html
 
 /**
- * @Route("/user/api")
+ * @Route("/user_api")
  */
 class UserApiController extends AbstractController
 {
@@ -24,7 +25,7 @@ class UserApiController extends AbstractController
     /**
      * @Route("/new", name="user_api_new", methods={"POST"})
      */
-    public function new(Request $request, UserRepository $userRepository): Response
+    public function new(Request $request, UserRepository $userRepository, UserPasswordEncoderInterface $encoder): Response
     {
 
         if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
@@ -32,48 +33,57 @@ class UserApiController extends AbstractController
         }
 
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserLoginType::class, $user);
 
-        if ($request->isMethod('POST')) {
+        if (!$request->isMethod('POST')) {
+            return $this->json([
+                'error' => 'NOT_POST'
+            ]);
+        }
 
-            $form->submit($data, false);
+        $form->submit($data, false);
 
-            $errors = [];
-            $userByEmail = $userRepository->loadUserByUsername($data['email']);
-            $userByUsername = $userRepository->loadUserByUsername($data['username']);
+        $errors = [];
+        $userByEmail = $userRepository->loadUserByUsername($data['email']);
+        $userByUsername = $userRepository->loadUserByUsername($data['username']);
 
-            if (isset($userByEmail)) {
-                $errors[] = "E-Mail adress has already been registered";
+        if (isset($userByEmail)) {
+            $errors[] = "E-Mail adress has already been registered";
+        }
+
+        if (isset($userByUsername)) {
+            $errors[] = "Username has already been registered";
+        }
+
+        foreach ($form->getErrors() as $key => $error) {
+            if ($form->isRoot()) {
+                $errors[$error->getOrigin()->getName()][] = $error->getMessage();
+            } else {
+                $errors[$error->getOrigin()->getName()] = $error->getMessage();
             }
+        }
 
-            if (isset($userByUsername)) {
-                $errors[] = "Username has already been registered";
+        if (count($errors) > 0) {
+            return $this->json($errors);
+        }
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /*
+            if ($data['username'] == 'tianos_admin') {
+                $user->setRoles([User::ROLE_ADMIN]);
+            } else {
+                $user->setRoles([User::ROLE_TIANOS]);
             }
+            */
+            
+            $encoded = $encoder->encodePassword($user, $data['password']);
+            $user->setPassword($encoded);
 
-            foreach ($form->getErrors() as $key => $error) {
-                if ($form->isRoot()) {
-                    $errors[$error->getOrigin()->getName()][] = $error->getMessage();
-                } else {
-                    $errors[$error->getOrigin()->getName()] = $error->getMessage();
-                }
-            }
-
-            if (count($errors) > 0) {
-                return $this->json($errors);
-            }
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                if ($data['username'] == 'tianos_admin') {
-                    $user->setRoles([User::ROLE_ADMIN]);
-                } else {
-                    $user->setRoles([User::ROLE_TIANOS]);
-                }
-
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($user);
-                $entityManager->flush();
-            }
+            $user->setRoles([User::ROLE_TIANOS]);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
         }
 
         return $this->json([

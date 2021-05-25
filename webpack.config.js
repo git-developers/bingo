@@ -8,24 +8,31 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     // directory where compiled assets will be stored
-    .setOutputPath('public/build/')
+    //.setOutputPath('public/build')
+    .setOutputPath('public/build')
     // public path used by the web server to access the output path
     //.setPublicPath('/build')
-    .setPublicPath('build')
-    
+    .setPublicPath('/bingo/public/build')
+    .setManifestKeyPrefix('build')
+
     .autoProvideVariables({
         $: 'jquery',
         jQuery: 'jquery',
         'window.jQuery': 'jquery',
     })
-
-    /*
     .copyFiles({
-        from: './assets/images'
-    })
-    */
+        from: './assets/images',
 
-    
+        // optional target path, relative to the output dir
+        to: 'images/[path][name].[ext]',
+
+        // if versioning is enabled, add the file hash too
+        //to: 'images/[path][name].[hash:8].[ext]',
+
+        // only copy files matching this pattern
+        //pattern: /\.(png|jpg|jpeg)$/
+    })
+
     // only needed for CDN's or sub-directory deploy
     //.setManifestKeyPrefix('build/')
 
@@ -39,6 +46,8 @@ Encore
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
     .addEntry('app', './assets/js/app.js')
+    .addEntry('play', './assets/play/js/play.js')
+    .addEntry('participate', './assets/participate/js/participate.js')
     .addEntry('jquery.min', './assets/plugins/jquery/jquery.min.js')
     .addEntry('jquery-ui.min', './assets/plugins/jquery-ui/jquery-ui.min.js')
     .addEntry('bootstrap.bundle.min', './assets/plugins/bootstrap/js/bootstrap.bundle.min.js')
@@ -84,9 +93,8 @@ Encore
     .addEntry('frontend-frontend.min-js', './assets/frontend/js/frontend.min.js')
     .addEntry('frontend-rocket-loader.min', './assets/frontend/js/rocket-loader.min.js')
 
-
-    //.addStyleEntry('all.min', './assets/plugins/fontawesome-free/css/all.min.css')
-
+    .addStyleEntry('all.min', './node_modules/@fortawesome/fontawesome-free/css/all.min.css')
+    // .addStyleEntry('font-awesome', './assets/font-awesome/css/font-awesome.css')
     .addStyleEntry('app-scss', './assets/css/app.scss')
     .addStyleEntry('tempusdominus-bootstrap-4.min-js', './assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')
     .addStyleEntry('icheck-bootstrap.min', './assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css')

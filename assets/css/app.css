@@ -1,0 +1,13 @@
+@import '~@fortawesome/fontawesome-free/css/fontawesome.css';
+/*@import '~@fortawesome/fontawesome-free/css/all.css';*/
+@import '~@fortawesome/fontawesome-free/css/solid.css';
+
+.cursor-x {
+    cursor: pointer;
+}
+.mar-bot-10 {
+    margin-bottom: 10px;
+}
+.mar-top-10 {
+    margin-top: 10px;
+}

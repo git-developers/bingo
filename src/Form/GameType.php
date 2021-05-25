@@ -35,7 +35,7 @@ class GameType extends AbstractType
                 'empty_data'  => null,
                 'error_bubbling' => false,
             ])
-            ->add('usersGame', EntityType::class, [
+            ->add('users', EntityType::class, [
                 'label' => 'Players',
                 'class' => User::class,
                 'multiple' => true,

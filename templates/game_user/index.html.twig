@@ -72,14 +72,14 @@
                                                 {% set status = 'warning' %}
                                             {% endif %}
                                             <small class="badge badge-{{ status }}">
-                                                <i class="far fa-clock"></i> {{ game.status }}
+                                                <i class="fa fa-clock"></i> {{ game.status }}
                                             </small>
                                         </td>
                                         <td>
                                             <a
                                                 href="{{ path('game_user_participate', {'id': game.id}) }}"
-                                                class="btn btn-info">
-                                                <i class="fa fa-check"></i> participar
+                                                class="btn btn-success">
+                                                <i class="fa fa-check"></i> Seleccionar
                                             </a>
                                         </td>
                                     </tr>

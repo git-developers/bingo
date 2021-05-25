@@ -2,19 +2,19 @@
 
 namespace App\Entity;
 
-use App\Repository\GameRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use App\Validator as AcmeAssert;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=GameRepository::class)
- * @ORM\HasLifecycleCallbacks()
+ * Game
+ *
+ * @ORM\Table(name="game", indexes={@ORM\Index(name="IDX_232B318C9B463F01", columns={"card_pattern_id"})})
+ * @ORM\Entity
  */
 class Game
 {
+
     const STATUS_CREATED = "CREATED";
     const STATUS_OPEN = "OPEN";
     const STATUS_CLOSED = "CLOSED";
@@ -22,66 +22,81 @@ class Game
     const NUMBERS_75 = 75;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="code", type="string", length=255, nullable=false)
      */
     private $code;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(name="status", type="string", length=255, nullable=false)
      */
     private $status;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="card_number", type="integer", nullable=false)
      */
     private $cardNumber;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
+     * @var int
+     *
+     * @ORM\Column(name="max_card", type="integer", nullable=false)
      */
     private $maxCard;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="games")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="created_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
      */
-    private $usersGame;
+    private $createdAt = 'CURRENT_TIMESTAMP';
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\CardPattern", inversedBy="gameCardPattern")
+     * @var \DateTime
+     *
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false, options={"default"="CURRENT_TIMESTAMP"})
+     */
+    private $updatedAt = 'CURRENT_TIMESTAMP';
+
+    /**
+     * @var \CardPattern
+     *
+     * @ORM\ManyToOne(targetEntity="CardPattern")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="card_pattern_id", referencedColumnName="id")
+     * })
      */
     private $cardPattern;
-    
-    /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
-     */
-    private $createdAt;
 
     /**
-     * @Assert\Type("\DateTimeInterface")
-     * @ORM\Column(type="datetime", options={"default": "CURRENT_TIMESTAMP"})
+     * @var \User
      */
-    private $updatedAt;
+    private $users;
 
     public function __construct()
     {
-        $this->usersGame = new ArrayCollection();
-    }
-
-    public function __toString() {
-        return $this->name;
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -137,56 +152,6 @@ class Game
         return $this;
     }
 
-    public function getCreated(): ?\DateTimeInterface
-    {
-        return $this->created;
-    }
-
-    public function setCreated(\DateTimeInterface $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsersGame(): Collection
-    {
-        return $this->usersGame;
-    }
-
-    public function addUsersGame(User $usersGame): self
-    {
-        if (!$this->usersGame->contains($usersGame)) {
-            $this->usersGame[] = $usersGame;
-        }
-
-        return $this;
-    }
-
-    public function removeUsersGame(User $usersGame): self
-    {
-        if ($this->usersGame->contains($usersGame)) {
-            $this->usersGame->removeElement($usersGame);
-        }
-
-        return $this;
-    }
-
-    public function getCardPattern(): ?CardPattern
-    {
-        return $this->cardPattern;
-    }
-
-    public function setCardPattern(?CardPattern $cardPattern): self
-    {
-        $this->cardPattern = $cardPattern;
-
-        return $this;
-    }
-
     public function getMaxCard(): ?int
     {
         return $this->maxCard;
@@ -223,5 +188,47 @@ class Game
         return $this;
     }
 
+    public function getCardPattern(): ?CardPattern
+    {
+        return $this->cardPattern;
+    }
 
+    public function setCardPattern(?CardPattern $cardPattern): self
+    {
+        $this->cardPattern = $cardPattern;
+
+        return $this;
+    }
+
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+
+        if (is_null($this->users)) {
+            $this->users = new ArrayCollection();
+        }
+
+        return $this->users;
+    }
+
+    public function addUsers(User $users): self
+    {
+        if (!$this->users->contains($users)) {
+            $this->users[] = $users;
+        }
+
+        return $this;
+    }
+
+    public function removeUsers(User $users): self
+    {
+        if ($this->users->contains($users)) {
+            $this->users->removeElement($users);
+        }
+
+        return $this;
+    }
 }

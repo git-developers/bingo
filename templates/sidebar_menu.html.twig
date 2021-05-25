@@ -7,7 +7,7 @@
                 <p>
                     bingo.tianos.com
                     <span class="badge badge-info right">
-                        <i class="fa fa-bookmark-o" aria-hidden="true"></i>
+                        <i class="fa fa-bookmark" aria-hidden="true"></i>
                     </span>
                 </p>
             </a>
@@ -15,25 +15,14 @@
 
         {% if is_granted('ROLE_TIANOS') %}
             <li class="nav-item has-treeview {% if app.request.get('_route') matches '(game_user_index|game_user_participate)' %}menu-open{% endif %}">
-                <a href="#" class="nav-link {% if app.request.get('_route') matches '(game_user_index|game_user_participate)' %}active{% endif %}">
-                    <i class="fa fa-cube"></i>
-                    <p>
-                        Game config
-                        <i class="fa fa-angle-left right"></i>
-                    </p>
+                <a href="{{ path('game_user_index') }}" class="nav-link {% if app.request.get('_route') matches '(game_user_index|game_user_participate)' %}active{% endif %}">
+                    <i class="fa fa-calendar-alt"></i>
+                    <p>Games</p>
                 </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <a href="{{ path('game_user_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-warning"></i>
-                            <p>Games</p>
-                        </a>
-                    </li>
-                </ul>
             </li>
             <li class="nav-item has-treeview {% if app.request.get('_route') matches '(money_history_index)' %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if app.request.get('_route') matches '(money_history_index)' %}active{% endif %}">
-                    <i class="fa fa-money"></i>
+                    <i class="fa fa-money-bill"></i>
                     <p>
                         Monedas
                         <i class="fa fa-angle-left right"></i>
@@ -42,7 +31,7 @@
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{ path('money_history_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-warning"></i>
+                            <i class="nav-icon fa fa-circle-notch text-warning"></i>
                             <p>Historial</p>
                         </a>
                     </li>
@@ -53,7 +42,7 @@
         {% if is_granted('ROLE_ADMIN') %}
             <li class="nav-item has-treeview {% if app.request.get('_route') matches '(game_index|game_new|game_edit|card_pattern_index)' %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if app.request.get('_route') matches '(game_index|game_new|game_edit|card_pattern_index)' %}active{% endif %}">
-                    <i class="fa fa-cube"></i>
+                    <i class="fa fa-calendar-alt"></i>
                     <p>
                         Game config
                         <i class="fa fa-angle-left right"></i>
@@ -62,7 +51,7 @@
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{ path('game_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-warning"></i>
+                            <i class="nav-icon fa fa-circle-notch text-warning"></i>
                             <p>Games</p>
                         </a>
                     </li>
@@ -75,19 +64,16 @@
                     {#
                     <li class="nav-item">
                         <a href="{{ path('product_new') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-success"></i>
+                            <i class="nav-icon fa fa-circle-notch text-success"></i>
                             <p>New Product</p>
                         </a>
                     </li>
                     #}
                 </ul>
             </li>
-        {% endif %}
-
-        {% if is_granted('ROLE_ADMIN') %}
             <li class="nav-item has-treeview {% if app.request.get('_route') matches '(user_index|user_new|user_edit)' %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if app.request.get('_route') matches '(user_index|user_new|user_edit)' %}active{% endif %}">
-                    <i class="fa fa-user-circle-o"></i>
+                    <i class="fa fa-user-circle"></i>
                     <p>
                         Users
                         <i class="fa fa-angle-left right"></i>
@@ -96,13 +82,13 @@
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{ path('user_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-warning"></i>
+                            <i class="nav-icon fa fa-circle-notch text-warning"></i>
                             <p>List</p>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="{{ path('user_new') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-success"></i>
+                            <i class="nav-icon fa fa-circle-notch text-success"></i>
                             <p>Create New</p>
                         </a>
                     </li>
@@ -110,7 +96,7 @@
             </li>
             <li class="nav-item has-treeview {% if app.request.get('_route') matches '(money_index|money_new|money_edit)' %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if app.request.get('_route') matches '(money_index|money_new|money_edit)' %}active{% endif %}">
-                    <i class="fa fa-money"></i>
+                    <i class="fa fa-money-bill"></i>
                     <p>
                         Monedas
                         <i class="fa fa-angle-left right"></i>
@@ -119,13 +105,45 @@
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{ path('money_index') }}" class="nav-link">
-                            <i class="nav-icon fa fa-circle-o text-warning"></i>
+                            <i class="nav-icon fa fa-circle-notch text-warning"></i>
                             <p>Gestionar</p>
                         </a>
                     </li>
                 </ul>
             </li>
+            <li class="nav-item has-treeview {% if app.request.get('_route') matches '(card_index|card_new|card_edit)' %}menu-open{% endif %}">
+                <a href="#" class="nav-link {% if app.request.get('_route') matches '(card_index|card_new|card_edit)' %}active{% endif %}">
+                    <i class="fa fa-clone"></i>
+                    <p>
+                        Cards
+                        <i class="fa fa-angle-left right"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{ path('card_index') }}" class="nav-link">
+                            <i class="nav-icon fa fa-circle-notch text-warning"></i>
+                            <p>Gestionar</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ path('card_generate') }}" class="nav-link">
+                            <i class="nav-icon fa fa-circle-notch text-success"></i>
+                            <p>Generar</p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
         {% endif %}
+
+        <li class="nav-item has-treeview {% if app.request.get('_route') matches '(app_logout)' %}menu-open{% endif %}">
+            <a href="{{ path('app_logout') }}" class="nav-link {% if app.request.get('_route') matches '(app_logout)' %}active{% endif %}">
+                <i class="fa fa-sign-out-alt"></i>
+                <p>
+                    Logout
+                </p>
+            </a>
+        </li>
 
     </ul>
 </nav>

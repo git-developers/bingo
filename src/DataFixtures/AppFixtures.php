@@ -6,9 +6,11 @@ use App\Entity\User;
 use App\Entity\Money;
 use App\Entity\Profile;
 use App\Entity\Game;
+use App\Entity\Card;
 use App\Entity\CardPattern;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use App\Util\CardUtil;
 
 class AppFixtures extends Fixture
 {
@@ -159,6 +161,7 @@ class AppFixtures extends Fixture
         $o->setEmail("tianos_admin@tianos.com");
         $o->setProfile($o2);
         $o->setUsername('tianos_admin');
+        $o->setPassword(123456);
         $o->setRoles([
             'ROLE_USER',
             'ROLE_ADMIN',
@@ -172,6 +175,7 @@ class AppFixtures extends Fixture
         $o->setEmail("player-1@tianos.com");
         $o->setProfile($o1);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m5);
         $manager->persist($o);
@@ -182,6 +186,7 @@ class AppFixtures extends Fixture
         $o->setEmail("player-2@tianos.com");
         $o->setProfile($o1);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m10);
         $manager->persist($o);
@@ -192,6 +197,7 @@ class AppFixtures extends Fixture
         $o->setEmail("player-3@tianos.com");
         $o->setProfile($o1);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m4);
         $manager->persist($o);
@@ -202,6 +208,7 @@ class AppFixtures extends Fixture
         $o->setEmail("player-4@tianos.com");
         $o->setProfile($o1);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m5);
         $manager->persist($o);
@@ -214,6 +221,7 @@ class AppFixtures extends Fixture
         $o->setEmail("staff-member-1@tianos.com");
         $o->setProfile($o2);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m20);
         $manager->persist($o);
@@ -224,18 +232,33 @@ class AppFixtures extends Fixture
         $o->setEmail("staff-member-2@tianos.com");
         $o->setProfile($o2);
         $o->setUsername(uniqid());
+        $o->setPassword(123456);
         $o->setRoles($roles);
         $o->setMoney($m4);
         $manager->persist($o);
 
-        // ==================================
+
+        // GAME ==================================
         $o = new Game();
         $o->setName("GAME_TEST_01");
         $o->setCardNumber(Game::NUMBERS_75);
         $o->setCardPattern($cp);
         $o->setMaxCard(4);
+        $o->setStatus(Game::STATUS_OPEN);
         $manager->persist($o);
 
         $manager->flush();
+
+
+        // CARDS ==================================
+        $cards = CardUtil::generateBingoCards(2000);
+
+        foreach ($cards as $key => $value) {
+            $o = new Card();
+            $o->setCardHash($key);
+            $o->setJson(json_encode($value));
+            $manager->persist($o);
+            $manager->flush();
+        }
     }
 }

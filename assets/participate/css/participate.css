@@ -1,0 +1,31 @@
+.bingo-card {
+    width: 85%;
+    display: inline-block;
+    margin: 0 20px 20px 20px;
+    border-radius: .5rem;
+    padding: .5rem;
+    background-color: #ff9d01;
+}
+.bingo-card .col .card-letter {
+    font-size: 2rem;
+    line-height: 1.5;
+    color: #343434;
+}
+.bingo-card .col .card-numbers {
+    border-top: 1px solid #cecece;
+    border-bottom: 1px solid #cecece;
+}
+.bingo-card .col .card-numbers .card-number:first-child {
+    border-top: 0;
+}
+.bingo-card .col .card-numbers .card-number {
+    font-size: 2rem;
+    background: #fff;
+    border: 1px solid #cecece;
+    text-align: center;
+}
+.bingo-card .col .card-letter, .card-block .card .col .card-number {
+    text-align: center;
+    padding: .25em;
+    margin: 0;
+}

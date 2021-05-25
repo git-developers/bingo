@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 /**
- * @Route("/moneyhistory")
+ * @Route("/money_history")
  * @IsGranted("ROLE_TIANOS")
  */
 class MoneyHistoryController extends AbstractController
